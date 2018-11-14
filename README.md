@@ -1,2 +1,2 @@
-# noise-to-noise
-Noise2Noise implementation
+# Noise2Noise
+Tensorflow Noise2Noise implementation

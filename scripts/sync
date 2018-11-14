@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+REMOTE_DIR="~/dev/noise2noise"
+
+
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 [up|down]"
+    exit 1
+else
+    direction=$1
+fi
+
+
+if [[ -z "$REMOTE" ]]; then
+    echo "Need to set REMOTE"
+    exit 1
+fi
+
+
+# TODO: Define inclusions instead.
+
+sync_exclusions="
+    --exclude .ipynb_checkpoints
+    --exclude __pycache__
+    --exclude .git"
+
+
+if [[ "${direction}" == "up" ]]; then
+    ssh ${REMOTE} mkdir -p "${REMOTE_DIR}"
+    rsync -r ${sync_exclusions} . "${REMOTE}:${REMOTE_DIR}/"
+elif [[ "${direction}" == "down" ]]; then
+    rsync -r ${sync_exclusions} "${REMOTE}:${REMOTE_DIR}/" .
+else
+    echo "Invalid direction."
+    exit 1
+fi

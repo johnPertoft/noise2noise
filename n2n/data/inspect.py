@@ -16,4 +16,3 @@ with tf.Session() as sess:
     for i1, i2, gt, ax in zip(img1, img2, ground_truth, axes):
         ax.imshow(np.concatenate((i1, i2, gt), axis=1))
     plt.show()
-

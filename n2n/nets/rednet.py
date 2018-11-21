@@ -9,6 +9,7 @@ def model_fn(x, is_training):
 
     # TODO: Should be relu on sum of current and skip connection?
     # TODO: Not sure about dconv_block.
+    # TODO: Try to find a better description of this architecture.
 
     def conv_block(x, d):
         x = conv(x, d, 3, 1)
@@ -36,7 +37,7 @@ def model_fn(x, is_training):
 
     d6 = dconv_block(d5 + c3, 256)
     d7 = dconv_block(d6 + c2, 128)
-    d8 = dconv(d7 + c1, 3, kernel_size=3, strides=2, activation=tf.nn.tanh)
+    d8 = dconv(d7 + c1, 3, kernel_size=3, strides=2, activation=tf.nn.sigmoid)
     x = d8
 
     return x

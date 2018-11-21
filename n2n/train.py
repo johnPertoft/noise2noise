@@ -22,21 +22,21 @@ def main(argv):
         model_fn=model_fn,
         model_dir=FLAGS.model_dir)
 
-    # TODO: Define noise fn via flags.
-
     def input_fn_train():
         ds = imagenet(FLAGS.train_files, FLAGS.batch_size, additive_gaussian_noise(0, 50))
-        ds = ds.map(lambda img1, img2, gt: ({'input': img1, 'target': img2}, gt))
+        ds = ds.map(lambda img1, img2, gt: {'input': img1, 'target': img2, 'gt': gt})
         return ds
 
     def input_fn_eval():
         ds = imagenet(FLAGS.eval_files, FLAGS.eval_batch_size, additive_gaussian_noise(25, 25))
-        ds = ds.map(lambda img1, img2, gt: ({'input': img1, 'target': None}, gt))
+        ds = ds.map(lambda img1, img2, gt: {'input': img1, 'target': img2, 'gt': gt})
         return ds
+
+    # TODO: Add summaries.
 
     train_spec = tf.estimator.TrainSpec(
         input_fn=input_fn_train,
-        hooks=[])  # TODO: Add summaries.
+        hooks=[])
 
     eval_spec = tf.estimator.EvalSpec(
         input_fn=input_fn_eval,

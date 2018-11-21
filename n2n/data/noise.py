@@ -15,3 +15,10 @@ def additive_gaussian_noise(min_stddev, max_stddev):
         return noisy_img1, noisy_img2
 
     return apply
+
+
+def text_overlay_noise():
+    def apply(img):
+        pass
+
+    return apply

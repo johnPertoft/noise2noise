@@ -1,0 +1,17 @@
+#!/bin/bash
+
+session_name="n2n"
+
+
+tmux has-session -t ${session_name} 2>/dev/null
+if [ $? -eq 0 ]; then
+    echo "Session exists."
+    exit 1
+fi
+
+
+tmux new-session -d -s ${session_name}
+tmux split-window -h "htop"
+tmux split-window -v "watch nvidia-smi"
+tmux select-pane -t 0
+tmux attach-session -d

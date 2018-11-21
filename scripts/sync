@@ -19,7 +19,8 @@ fi
 
 
 sync_up_inclusions="
-    --include *.py"
+    --include *.py
+    --include /scripts/*"
 
 sync_down_inclusions="
     --include *.ipynb"

@@ -10,8 +10,21 @@ if [ $? -eq 0 ]; then
 fi
 
 
+tmux_cmd () {
+  keys="$(echo $1 | sed 's/ / Space /g')"
+  tmux send-keys $keys Enter
+}
+
+
 tmux new-session -d -s ${session_name}
-tmux split-window -h "htop"
+
+tmux split-window -h
+#tmux send-keys htop Enter
+tmux_cmd "htop"
+
 tmux split-window -v "watch nvidia-smi"
+#tmux send-keys watch Space nvidia-smi Enter
+tmux_cmd "watch nvidia-smi"
+
 tmux select-pane -t 0
 tmux attach-session -d

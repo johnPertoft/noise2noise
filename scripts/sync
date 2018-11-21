@@ -18,19 +18,18 @@ if [[ -z "$REMOTE" ]]; then
 fi
 
 
-# TODO: Define inclusions instead.
+sync_up_inclusions="
+    --include *.py"
 
-sync_exclusions="
-    --exclude .ipynb_checkpoints
-    --exclude __pycache__
-    --exclude .git"
+sync_down_inclusions="
+    --include *.ipynb"
 
 
 if [[ "${direction}" == "up" ]]; then
     ssh ${REMOTE} mkdir -p "${REMOTE_DIR}"
-    rsync -r ${sync_exclusions} . "${REMOTE}:${REMOTE_DIR}/"
+    rsync -r --include "*/" ${sync_up_inclusions} --exclude "*" . "${REMOTE}:${REMOTE_DIR}/"
 elif [[ "${direction}" == "down" ]]; then
-    rsync -r ${sync_exclusions} "${REMOTE}:${REMOTE_DIR}/" .
+    rsync -r --include "*/" ${sync_down_inclusions} --exclude "*" "${REMOTE}:${REMOTE_DIR}/" .
 else
     echo "Invalid direction."
     exit 1

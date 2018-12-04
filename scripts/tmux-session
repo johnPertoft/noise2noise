@@ -12,7 +12,7 @@ fi
 
 tmux_cmd () {
   keys="$(echo $1 | sed 's/ / Space /g')"
-  tmux send-keys $keys Enter
+  tmux send-keys ${keys} Enter
 }
 
 

@@ -3,7 +3,7 @@ from functools import partial
 import tensorflow as tf
 
 
-def model_fn(x, is_training):
+def model_fn(x, is_training, output_fn=None):
     conv = partial(tf.layers.conv2d, padding='same')
     dconv = partial(tf.layers.conv2d_transpose, padding='same')
 
@@ -37,7 +37,7 @@ def model_fn(x, is_training):
 
     d6 = dconv_block(d5 + c3, 256)
     d7 = dconv_block(d6 + c2, 128)
-    d8 = dconv(d7 + c1, 3, kernel_size=3, strides=2, activation=tf.nn.sigmoid)
+    d8 = dconv(d7 + c1, 3, kernel_size=3, strides=2, activation=output_fn)
     x = d8
 
     return x

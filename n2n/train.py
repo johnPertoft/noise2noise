@@ -32,7 +32,7 @@ def main(argv):
         ds = ds.map(lambda img1, img2, gt: {'input': img1, 'target': img2, 'gt': gt})
         return ds
 
-    # TODO: Add summaries.
+    # TODO: Need to add hooks for eval summaries?
 
     train_spec = tf.estimator.TrainSpec(
         input_fn=input_fn_train,

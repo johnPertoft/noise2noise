@@ -12,10 +12,13 @@ tf.app.flags.DEFINE_boolean('gradient_histograms', False, 'Whether to add histog
 FLAGS = tf.app.flags.FLAGS
 
 
+# TODO: Add PSNR metric.
+# TODO: Add more crops and zoom in. Randomized positions?
+# TODO: Paper mentions rampdown period but no details. Check reference implementation.
+
+
 def model_fn(features, labels, mode, config):
     assert labels is None, '`labels` argument should not be used.'
-
-    # TODO: Preprocess x to [-1, 1]? or keep output of f in [0, 1]?
 
     is_training = mode == tf.estimator.ModeKeys.TRAIN
 
@@ -28,6 +31,8 @@ def model_fn(features, labels, mode, config):
 
     if FLAGS.loss == 'l2':
         loss_fn = tf.losses.mean_squared_error
+    elif FLAGS.loss == 'l1':
+        loss_fn = tf.losses.absolute_difference
     else:
         raise ValueError(f'Invalid loss: `{FLAGS.loss}`.')
 
@@ -43,11 +48,19 @@ def model_fn(features, labels, mode, config):
 
     loss = loss_fn(x_hat, features['target'])
 
-    # TODO: Add psnr.
     mean_ground_truth_loss = tf.metrics.mean(loss_fn(x_hat, features['gt']))
 
     if mode == tf.estimator.ModeKeys.EVAL:
         tf.summary.image('denoising', tf.concat((features['input'], x_hat, features['gt']), axis=2))
+
+        crop_central_fraction = 0.4
+        tf.summary.image(
+            'denoising_zoomed',
+            tf.concat((
+                tf.image.central_crop(features['input'], crop_central_fraction),
+                tf.image.central_crop(x_hat, crop_central_fraction),
+                tf.image.central_crop(features['gt'], crop_central_fraction)),
+                axis=2))
 
         eval_summary_hook = tf.train.SummarySaverHook(
             save_steps=1,
@@ -63,7 +76,6 @@ def model_fn(features, labels, mode, config):
     if mode == tf.estimator.ModeKeys.TRAIN:
         global_step = tf.train.get_or_create_global_step()
 
-        # TODO: Paper mentions rampdown period but no details.
         learning_rate = 1e-4
 
         optimizer = tf.train.AdamOptimizer(

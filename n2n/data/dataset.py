@@ -1,9 +1,9 @@
-from typing import Callable
-
 import tensorflow as tf
 
+from .noise import NoiseFn
 
-def imagenet(file_pattern: str, batch_size: int, noise_fn: Callable, seed=None) -> tf.data.Dataset:
+
+def imagenet(file_pattern: str, batch_size: int, noise_fn: NoiseFn, seed=None) -> tf.data.Dataset:
     def parse_fn(example):
         parsed = tf.parse_single_example(example, {'image/encoded': tf.FixedLenFeature((), tf.string)})
         image = tf.image.decode_jpeg(parsed['image/encoded'], channels=3)
@@ -12,7 +12,7 @@ def imagenet(file_pattern: str, batch_size: int, noise_fn: Callable, seed=None) 
         return image
 
     def apply_noise(img):
-        a, b, = noise_fn(img)
+        a, b = noise_fn(img)
         return a, b, img
 
     files = tf.data.Dataset.list_files(file_pattern, seed=seed)

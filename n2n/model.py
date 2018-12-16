@@ -29,10 +29,10 @@ def model_fn(features, labels, mode, config):
     else:
         raise ValueError(f'Invalid architecture: `{FLAGS.architecture}`.')
 
-    if FLAGS.loss == 'l2':
-        loss_fn = tf.losses.mean_squared_error
-    elif FLAGS.loss == 'l1':
+    if FLAGS.loss == 'l1':
         loss_fn = tf.losses.absolute_difference
+    elif FLAGS.loss == 'l2':
+        loss_fn = tf.losses.mean_squared_error
     else:
         raise ValueError(f'Invalid loss: `{FLAGS.loss}`.')
 

@@ -33,10 +33,36 @@ def additive_gaussian_noise(min_stddev: float, max_stddev: float, use_same_distr
 
 def brown_additive_gaussian_noise(min_stddev: float, max_stddev: float) -> NoiseFn:
     def apply(img):
-        noisy_img1, noisy_img2 = additive_gaussian_noise(min_stddev, max_stddev)
+        """
+        This brown additive noise
+        is obtained by blurring white Gaussian noise by a spatial
+        Gaussian filter of different bandwidths and scaling to retain
+        σ = 25
 
-        # TODO: Apply a gaussian filter. Fixed weights per pair?
-        # TODO: Does this depend on which stddev was sampled?
+        Details?? Don't think the following is correct. Doesn't seem to be implemented in official repo.
+        * What bandwidths?
+        * How to scale to retain sigma = 25?
+        """
+
+        stddev = 25.0 / 255
+        k = 3
+        sigma = 1.0
+        coordinates = np.linspace(-k // 2, k // 2, k)
+        x, y = np.meshgrid(coordinates, coordinates)
+        kernel = np.exp(-(x**2 / (2 * sigma**2) + y ** 2 / (2 * sigma**2)))
+        kernel = tf.convert_to_tensor(kernel, dtype=tf.float32)
+        kernel = kernel / tf.reduce_sum(kernel)
+        kernel = kernel[:, :, tf.newaxis, tf.newaxis]
+        kernel = tf.tile(kernel, [1, 1, 3, 1])
+
+        def add_noise(img, stddev):
+            noise = tf.random_normal(tf.shape(img), stddev=stddev)
+            noise = tf.nn.depthwise_conv2d(noise, kernel, [1, 1, 1, 1], padding='SAME')  # TODO: Reflect padding?
+            img = img + noise
+            img = tf.clip_by_value(img, 0.0, 1.0)
+            return img
+
+        return add_noise(img, stddev), add_noise(img, stddev)
 
     return apply
 

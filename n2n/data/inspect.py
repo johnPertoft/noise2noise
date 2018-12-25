@@ -6,6 +6,7 @@ from .dataset import imagenet
 from .noise import additive_gaussian_noise
 from .noise import brown_additive_gaussian_noise
 from .noise import text_overlay_noise
+from .noise import bernoulli_noise
 
 
 tf.app.flags.DEFINE_string('files', None, 'File pattern of tfrecord files for inspection.')
@@ -21,6 +22,8 @@ def main(argv):
         noise_fn = brown_additive_gaussian_noise(0, 50)
     elif FLAGS.noise == 'text':
         noise_fn = text_overlay_noise(0.0, 0.5)
+    elif FLAGS.noise == 'bernoulli':
+        noise_fn = bernoulli_noise(0.0, 0.95)
     else:
         raise ValueError(f'Invalid noise: {FLAGS.noise}.')
 

@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from .data import imagenet
 from .data.noise import additive_gaussian_noise
+from .data.noise import bernoulli_noise
 from .data.noise import text_overlay_noise
 from .model import model_fn
 
@@ -25,6 +26,10 @@ def main(argv):
     if FLAGS.noise == 'additive_gaussian':
         train_noise = additive_gaussian_noise(0, 50)
         eval_noise = additive_gaussian_noise(25, 25)
+    elif FLAGS.noise == 'bernoulli':
+        train_noise = bernoulli_noise(0.0, 0.95)
+        eval_noise = bernoulli_noise(0.5, 0.5)
+        # TODO: Should account for the masked gradients.
     elif FLAGS.noise == 'text':
         train_noise = text_overlay_noise(0, 0.5)
         eval_noise = text_overlay_noise(0.25, 0.25)

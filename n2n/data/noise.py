@@ -34,6 +34,8 @@ def additive_gaussian_noise(min_stddev: float, max_stddev: float, use_same_distr
 def brown_additive_gaussian_noise(min_stddev: float, max_stddev: float) -> NoiseFn:
     def apply(img):
         """
+        From paper:
+
         This brown additive noise
         is obtained by blurring white Gaussian noise by a spatial
         Gaussian filter of different bandwidths and scaling to retain
@@ -67,11 +69,29 @@ def brown_additive_gaussian_noise(min_stddev: float, max_stddev: float) -> Noise
     return apply
 
 
-def bernoulli_noise():
+def bernoulli_noise(min_corruption_rate: float,
+                    max_corruption_rate: float,
+                    use_same_distribution: bool = False) -> NoiseFn:
     def apply(img):
-        pass
+        def sample_corruption_rate():
+            return tf.random.uniform((tf.shape(img)[0],), minval=min_corruption_rate, maxval=max_corruption_rate)
 
-    # TODO: When using this they also construct a mask to not backpropagate gradients from missing pixels.
+        p1 = sample_corruption_rate()
+        p2 = sample_corruption_rate() if not use_same_distribution else p1
+
+        # TODO: Need to pass the gradient masks somehow to not backpropagate the gradients
+        # from missing pixels.
+
+        def apply_mask(img, p):
+            probs = p[:, tf.newaxis, tf.newaxis] * tf.ones(tf.shape(img)[:3])
+            mask = tf.distributions.Bernoulli(probs=probs).sample()
+            mask = tf.cast(mask, tf.float32)
+            mask = mask[..., tf.newaxis]
+            mask = tf.tile(mask, (1, 1, 1, 3))
+            img = img * mask
+            return img
+
+        return apply_mask(img, p1), apply_mask(img, p2)
 
     return apply
 

@@ -20,7 +20,8 @@ fi
 
 sync_up_inclusions="
     --include *.py
-    --include /scripts/*"
+    --include /scripts/*
+    --include Dockerfile"
 
 sync_down_inclusions="
     --include *.ipynb"

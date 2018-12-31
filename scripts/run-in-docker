@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# TODO: What about output directories?
+
+docker run -it --rm \
+    --runtime=nvidia \
+    -v $(pwd):/home/n2n:ro \
+    bash

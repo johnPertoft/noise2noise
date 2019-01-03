@@ -1,6 +1,7 @@
 #!/bin/bash
 
-IMAGE=n2n
+
+IMAGE="n2n"
 
 extra_volume_argument=""
 for volume in ${VOLUMES}

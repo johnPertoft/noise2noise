@@ -1,19 +1,18 @@
 #!/bin/bash
 
-session_name="n2n"
 
+SESSION_NAME="n2n"
 
-tmux has-session -t ${session_name} 2>/dev/null
+tmux has-session -t ${SESSION_NAME} 2>/dev/null
 if [ $? -eq 0 ]; then
-    tmux attach -t ${session_name}
+    tmux attach -t ${SESSION_NAME}
 else
     tmux_cmd () {
       keys="$(echo $1 | sed 's/ / Space /g')"
       tmux send-keys ${keys} Enter
     }
 
-
-    tmux new-session -d -s ${session_name}
+    tmux new-session -d -s ${SESSION_NAME}
 
     tmux split-window -h
     tmux_cmd "htop"

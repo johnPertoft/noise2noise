@@ -3,7 +3,6 @@
 
 REMOTE_DIR="~/dev/noise2noise"
 
-
 if [[ -z "$1" ]]; then
     echo "Usage: $0 [up|down]"
     exit 1
@@ -11,12 +10,10 @@ else
     direction=$1
 fi
 
-
 if [[ -z "$REMOTE" ]]; then
     echo "Need to set REMOTE"
     exit 1
 fi
-
 
 sync_up_inclusions="
     --include *.py
@@ -25,7 +22,6 @@ sync_up_inclusions="
 
 sync_down_inclusions="
     --include *.ipynb"
-
 
 if [[ "${direction}" == "up" ]]; then
     ssh ${REMOTE} mkdir -p "${REMOTE_DIR}"

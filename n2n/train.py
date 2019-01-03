@@ -8,9 +8,9 @@ from .model import model_fn
 
 
 tf.app.flags.DEFINE_string('model_dir', None, 'Where to place model checkpoint files.')
-tf.app.flags.DEFINE_string('train_files', None, 'File pattern of tfrecord files for training.')
-tf.app.flags.DEFINE_string('eval_files', None, 'File pattern of tfrecord files for evaluation.')
-tf.app.flags.DEFINE_integer('batch_size', 64, 'The batch size.')
+tf.app.flags.DEFINE_string('train_files', None, 'File pattern of tfrecord files for training (string).')
+tf.app.flags.DEFINE_string('eval_files', None, 'File pattern of tfrecord files for evaluation (string).')
+tf.app.flags.DEFINE_integer('batch_size', 8, 'The batch size.')
 tf.app.flags.DEFINE_integer('eval_batch_size', 128, 'The batch size for evaluation.')
 tf.app.flags.DEFINE_integer('num_epochs', 100, 'Number of epochs.')
 

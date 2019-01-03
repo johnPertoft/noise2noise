@@ -54,13 +54,14 @@ def model_fn(features, labels, mode, config):
         tf.summary.image('denoising', tf.concat((features['input'], x_hat, features['gt']), axis=2))
 
         crop_central_fraction = 0.4
-        tf.summary.image(
-            'denoising_zoomed',
-            tf.concat((
-                tf.image.central_crop(features['input'], crop_central_fraction),
-                tf.image.central_crop(x_hat, crop_central_fraction),
-                tf.image.central_crop(features['gt'], crop_central_fraction)),
-                axis=2))
+        crop = tf.concat((
+            tf.image.central_crop(features['input'], crop_central_fraction),
+            tf.image.central_crop(x_hat, crop_central_fraction),
+            tf.image.central_crop(features['gt'], crop_central_fraction)),
+            axis=2)
+        _, ch, cw, _ = crop.shape.as_list()
+        crop = tf.image.resize_images(crop, (int(ch * 1.5), int(cw * 1.5)))
+        tf.summary.image('denoising_zoomed', crop)
 
         eval_summary_hook = tf.train.SummarySaverHook(
             save_steps=1,

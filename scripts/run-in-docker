@@ -1,8 +1,19 @@
 #!/bin/bash
 
-# TODO: What about output directories?
+IMAGE=n2n
+
+extra_volume_argument=""
+for volume in ${VOLUMES}
+do
+    extra_volume_argument="${extra_volume_argument} -v ${volume}"
+done
+
+cmd="$*"
 
 docker run -it --rm \
     --runtime=nvidia \
-    -v $(pwd):/home/n2n:ro \
-    bash
+    -v $(pwd):/home/n2n \
+    -v /tmp:/tmp \
+    ${extra_volume_argument} \
+    ${IMAGE} \
+    bash -c "${cmd}"

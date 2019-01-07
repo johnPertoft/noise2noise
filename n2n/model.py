@@ -6,6 +6,7 @@ from .nets import unet
 
 tf.app.flags.DEFINE_string('architecture', 'unet', 'The network architecture to use.')
 tf.app.flags.DEFINE_string('loss', 'l2', 'The loss function to use.')
+tf.app.flags.DEFINE_float('learning_rate', 1e-4, 'The learning rate.')
 tf.app.flags.DEFINE_boolean('variable_histograms', False, 'Whether to add histogram summaries for model variables.')
 tf.app.flags.DEFINE_boolean('gradient_histograms', False, 'Whether to add histogram summaries for model gradients.')
 
@@ -15,6 +16,7 @@ FLAGS = tf.app.flags.FLAGS
 # TODO: Add PSNR metric.
 # TODO: Add more crops and zoom in. Randomized positions?
 # TODO: Paper mentions rampdown period but no details. Check reference implementation.
+# TODO: Add a comparison of some simple image processing approach. I.e. median of neighborhood or similar.
 
 
 def model_fn(features, labels, mode, config):
@@ -77,7 +79,8 @@ def model_fn(features, labels, mode, config):
     if mode == tf.estimator.ModeKeys.TRAIN:
         global_step = tf.train.get_or_create_global_step()
 
-        learning_rate = 1e-4
+        learning_rate = FLAGS.learning_rate
+        tf.summary.scalar('learning_rate', learning_rate)
 
         optimizer = tf.train.AdamOptimizer(
             learning_rate=learning_rate,

@@ -1,6 +1,6 @@
 import numpy as np
+import cv2
 import tensorflow as tf
-from matplotlib import pyplot as plt
 
 from .dataset import imagenet
 from .noise import additive_gaussian_noise
@@ -32,11 +32,12 @@ def main(argv):
     with tf.Session() as sess:
         img1, img2, ground_truth = ds.make_one_shot_iterator().get_next()
         img1, img2, ground_truth = sess.run((img1, img2, ground_truth))
-        _, axes = plt.subplots(5, 3)
-        axes = axes.flatten()
-        for i1, i2, gt, ax in zip(img1, img2, ground_truth, axes):
-            ax.imshow(np.concatenate((i1, i2, gt), axis=1))
-        plt.show()
+
+        img = np.concatenate((img1, img2, ground_truth), axis=2)
+        img = np.concatenate(img, axis=0)
+        img = (img * 255).astype(np.uint8)
+        img = img[:, :, [2, 1, 0]]  # cv2 expects BGR.
+        cv2.imwrite('noise-inspect-out.png', img)
 
 
 if __name__ == '__main__':

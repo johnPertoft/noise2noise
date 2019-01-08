@@ -80,7 +80,7 @@ def bernoulli_noise(min_corruption_rate: float,
         p2 = sample_corruption_rate() if not use_same_distribution else p1
 
         # TODO: Need to pass the gradient masks somehow to not backpropagate the gradients
-        # from missing pixels.
+        # from missing pixels in targets?
 
         def apply_mask(img, p):
             probs = p[:, tf.newaxis, tf.newaxis] * tf.ones(tf.shape(img)[:3])
@@ -145,7 +145,7 @@ def text_overlay_noise(min_coverage: float, max_coverage: float, use_same_distri
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                     fontScale=font_scale,
                     color=color,
-                    thickness=1,
+                    thickness=thickness,
                     lineType=cv2.LINE_AA)
 
             overlay_pixels = text_overlay[:, :, 3] > 0

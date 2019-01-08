@@ -37,12 +37,13 @@ Images from left to right are input image, denoised image, and ground truth nois
 ```bash
 $ python -m n2n.train <required-args> --noise additive_gaussian --loss l2
 ```
-![additive-gaussian](results/additive-gaussian.png)
+![additive-gaussian-noise](results/additive-gaussian.png)
 
 ### Text overlay noise
 ```bash
 $ python -m n2n.train <required-args> --noise text --loss l1
 ```
+![text-noise](results/text.png)
 
 ## TODO
 * Bernoulli noise

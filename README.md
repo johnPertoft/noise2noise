@@ -10,9 +10,20 @@ noisy examples, i.e. both inputs and targets are noisy realisations of the same 
 ## Docker
 (requires [nvidia-docker](https://github.com/NVIDIA/nvidia-docker))
 
-* `docker build -t n2n .`
-* `./scripts/run-in-docker <command>`
-* Extra volumes can be mounted by `VOLUMES="/vol1:/vol1 /vol2:/vol2" ./scripts/run-in-docker <command>`
+Build docker image
+```bash
+$ docker build -t n2n .
+```
+
+Run a command inside docker container
+```bash
+$ ./scripts/run-in-docker <command>
+```
+
+Mount extra volumes for input or output reasons. Current directory is already shared.
+```bash
+$ VOLUMES="/vol1:/vol1 /vol2:/vol2" ./scripts/run-in-docker <command>
+```
 
 ## Help
 ```bash
@@ -20,15 +31,21 @@ $ python -m n2n.train --helpfull
 ```
 
 ## Results
+Images from left to right are input image, denoised image, and ground truth noise free image.
+
+### Additive gaussian noise
 ```bash
 $ python -m n2n.train <required-args> --noise additive_gaussian --loss l2
 ```
 ![additive-gaussian](results/additive-gaussian.png)
 
+### Text overlay noise
 ```bash
 $ python -m n2n.train <required-args> --noise text --loss l1
 ```
-TODO
 
-
+## TODO
+* Bernoulli noise
+* Poisson noise
+* Raytracing/raycasting noise?
 

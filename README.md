@@ -45,8 +45,12 @@ $ python -m n2n.train <required-args> --noise text --loss l1
 ```
 ![text-noise](results/text.png)
 
+### Bernoulli noise
+TODO
+
+### Poisson noise
+TODO
+
 ## TODO
-* Bernoulli noise
-* Poisson noise
 * Raytracing/raycasting noise?
 

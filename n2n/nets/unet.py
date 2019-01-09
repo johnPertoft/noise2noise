@@ -12,7 +12,6 @@ def model_fn(x, is_training, output_fn=None):
         return tf.concat((a, b), axis=3)
 
     def upsample(x):
-        # TODO: Not sure if correct. 2x2 is mentioned so should probably explicitly pick nearest neighbor?
         _, h, w, _ = x.shape
         return tf.image.resize_nearest_neighbor(x, (h * 2, w * 2))
 

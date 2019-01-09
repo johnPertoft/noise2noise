@@ -59,7 +59,7 @@ def brown_additive_gaussian_noise(min_stddev: float, max_stddev: float) -> Noise
 
         def add_noise(img, stddev):
             noise = tf.random_normal(tf.shape(img), stddev=stddev)
-            noise = tf.nn.depthwise_conv2d(noise, kernel, [1, 1, 1, 1], padding='SAME')  # TODO: Reflect padding?
+            noise = tf.nn.depthwise_conv2d(noise, kernel, [1, 1, 1, 1], padding='SAME')
             img = img + noise
             img = tf.clip_by_value(img, 0.0, 1.0)
             return img
@@ -169,17 +169,11 @@ def text_overlay_noise(min_coverage: float, max_coverage: float, use_same_distri
 
         return add_text(img, coverage1), add_text(img, coverage2)
 
-    # TODO: They used median (l1) loss for this noise.
-
     return apply
 
 
 def impulse_noise():
     def apply(img):
-        # TODO: With probability p, replace a pixel with a random [0, 1]^3 color.
-
         pass
-
-    # TODO: They used l0 loss for this noise.
 
     return apply

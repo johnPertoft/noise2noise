@@ -14,9 +14,9 @@ FLAGS = tf.app.flags.FLAGS
 
 
 # TODO: Add PSNR metric.
-# TODO: Add more crops and zoom in. Randomized positions?
 # TODO: Paper mentions rampdown period but no details. Check reference implementation.
 # TODO: Add a comparison of some simple image processing approach. I.e. median of neighborhood or similar.
+# TODO: Add summary of average metric of noise img vs ground truth as well for comparison.
 
 
 def model_fn(features, labels, mode, config):

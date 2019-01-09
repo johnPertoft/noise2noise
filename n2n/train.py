@@ -7,6 +7,9 @@ from .data.noise import text_overlay_noise
 from .model import model_fn
 
 
+# TODO: Add option of using clean targets for comparison.
+
+
 tf.app.flags.DEFINE_string('model_dir', None, 'Where to place model checkpoint files.')
 tf.app.flags.DEFINE_string('train_files', None, 'File pattern of tfrecord files for training (string).')
 tf.app.flags.DEFINE_string('eval_files', None, 'File pattern of tfrecord files for evaluation (string).')
@@ -22,14 +25,12 @@ FLAGS = tf.app.flags.FLAGS
 
 
 def main(argv):
-    # TODO: Need conditional parameters for each noise type as well as for train and eval.
     if FLAGS.noise == 'additive_gaussian':
         train_noise = additive_gaussian_noise(0, 50)
         eval_noise = additive_gaussian_noise(25, 25)
     elif FLAGS.noise == 'bernoulli':
         train_noise = bernoulli_noise(0.0, 0.95)
         eval_noise = bernoulli_noise(0.5, 0.5)
-        # TODO: Should account for the masked gradients.
     elif FLAGS.noise == 'text':
         train_noise = text_overlay_noise(0, 0.5)
         eval_noise = text_overlay_noise(0.25, 0.25)
@@ -58,17 +59,7 @@ def main(argv):
         start_delay_secs=120,
         throttle_secs=600)
 
-    # TODO: Add option of using clean targets for comparison.
-
-    # TODO: Experiments with adversarial losses?
-
-    # TODO: Doesn't seem to reinit dataset. Just do explicit train/eval loop instead?
     tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
-
-    # TODO: Test set evaluation.
-
-    # TODO: Show comparisons with simpler techniques.
-        # Simple average of the two noisy realizations.
 
 
 if __name__ == '__main__':

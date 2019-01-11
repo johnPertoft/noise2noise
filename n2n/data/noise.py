@@ -81,6 +81,7 @@ def bernoulli_noise(min_corruption_rate: float,
 
         # TODO: Need to pass the gradient masks somehow to not backpropagate the gradients
         # from missing pixels in targets?
+        # TODO: Requires some refactor, maybe introduce a SyntheticNoiseFn which can carry some extra information? :/
 
         def apply_mask(img, p):
             probs = p[:, tf.newaxis, tf.newaxis] * tf.ones(tf.shape(img)[:3])
@@ -96,7 +97,7 @@ def bernoulli_noise(min_corruption_rate: float,
     return apply
 
 
-def poisson_noise():
+def poisson_noise() -> NoiseFn:
     def apply(img):
         pass
 
@@ -172,8 +173,26 @@ def text_overlay_noise(min_coverage: float, max_coverage: float, use_same_distri
     return apply
 
 
-def impulse_noise():
+def impulse_noise(min_corruption_rate: float,
+                  max_corruption_rate: float,
+                  use_same_distribution: bool = False) -> NoiseFn:
     def apply(img):
-        pass
+        def sample_corruption_rate():
+            return tf.random.uniform((tf.shape(img)[0],), minval=min_corruption_rate, maxval=max_corruption_rate)
+
+        p1 = sample_corruption_rate()
+        p2 = sample_corruption_rate() if not use_same_distribution else p1
+
+        def apply_noise(img, p):
+            noise = tf.random_uniform(tf.shape(img), 0, 1)
+            probs = p[:, tf.newaxis, tf.newaxis] * tf.ones(tf.shape(img)[:3])
+            noise_mask = tf.distributions.Bernoulli(probs=probs).sample()
+            noise_mask = tf.cast(noise_mask, tf.float32)
+            noise_mask = noise_mask[..., tf.newaxis]
+            noise_mask = tf.tile(noise_mask, (1, 1, 1, 3))
+            img = (1 - noise_mask) * img + noise_mask * noise
+            return img
+
+        return apply_noise(img, p1), apply_noise(img, p2)
 
     return apply

@@ -4,9 +4,10 @@ import tensorflow as tf
 
 from .dataset import imagenet
 from .noise import additive_gaussian_noise
-from .noise import brown_additive_gaussian_noise
-from .noise import text_overlay_noise
 from .noise import bernoulli_noise
+from .noise import brown_additive_gaussian_noise
+from .noise import impulse_noise
+from .noise import text_overlay_noise
 
 
 tf.app.flags.DEFINE_string('files', None, 'File pattern of tfrecord files for inspection.')
@@ -18,12 +19,14 @@ FLAGS = tf.app.flags.FLAGS
 def main(argv):
     if FLAGS.noise == 'additive_gaussian':
         noise_fn = additive_gaussian_noise(0, 50)
-    elif FLAGS.noise == 'brown_additive_gaussian':
-        noise_fn = brown_additive_gaussian_noise(0, 50)
-    elif FLAGS.noise == 'text':
-        noise_fn = text_overlay_noise(0.0, 0.5)
     elif FLAGS.noise == 'bernoulli':
         noise_fn = bernoulli_noise(0.0, 0.95)
+    elif FLAGS.noise == 'brown_additive_gaussian':
+        noise_fn = brown_additive_gaussian_noise(0, 50)
+    elif FLAGS.noise == 'impulse':
+        noise_fn = impulse_noise(0.0, 0.95)
+    elif FLAGS.noise == 'text':
+        noise_fn = text_overlay_noise(0.0, 0.5)
     else:
         raise ValueError(f'Invalid noise: {FLAGS.noise}.')
 

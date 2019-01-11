@@ -23,6 +23,7 @@ def model_fn(features, labels, mode, config):
     assert labels is None, '`labels` argument should not be used.'
 
     is_training = mode == tf.estimator.ModeKeys.TRAIN
+    global_step = tf.train.get_or_create_global_step()
 
     if FLAGS.architecture == 'unet':
         architecture = unet.model_fn
@@ -31,7 +32,17 @@ def model_fn(features, labels, mode, config):
     else:
         raise ValueError(f'Invalid architecture: `{FLAGS.architecture}`.')
 
-    if FLAGS.loss == 'l1':
+    if FLAGS.loss == 'l0':
+        def l0_loss(labels, predictions):
+            max_steps = 200_000
+            ratio = tf.math.minimum(global_step, max_steps) / max_steps
+            gamma = 2 * (1 - ratio)
+            gamma = tf.cast(gamma, tf.float32)
+            loss = (tf.abs(labels - predictions) + 1e-8) ** gamma
+            loss = tf.reduce_mean(loss)
+            return loss
+        loss_fn = l0_loss
+    elif FLAGS.loss == 'l1':
         loss_fn = tf.losses.absolute_difference
     elif FLAGS.loss == 'l2':
         loss_fn = tf.losses.mean_squared_error
@@ -77,8 +88,6 @@ def model_fn(features, labels, mode, config):
             evaluation_hooks=[eval_summary_hook])
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        global_step = tf.train.get_or_create_global_step()
-
         learning_rate = FLAGS.learning_rate
         tf.summary.scalar('learning_rate', learning_rate)
 

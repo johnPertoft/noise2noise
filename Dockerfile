@@ -18,8 +18,8 @@ RUN ln -s /usr/bin/python3.6 /usr/local/bin/python
 
 RUN pip3.6 install \
     tensorflow-gpu==1.12 \
-    numpy \
-    opencv-python
+    numpy==1.15.4 \
+    opencv-python==3.4.5
 
 RUN useradd -ms /bin/bash n2n
 USER n2n

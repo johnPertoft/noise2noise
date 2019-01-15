@@ -45,6 +45,11 @@ $ python -m n2n.train <required-args> --noise text --loss l1
 ```
 ![text-noise](results/text.png)
 
+### Impulse noise
+```bash
+$ python -m n2n.train <required-args> --noise impulse --loss l0
+```
+
 ### Bernoulli noise
 TODO
 

@@ -9,7 +9,16 @@ do
     extra_volume_argument="${extra_volume_argument} -v ${volume}"
 done
 
-cmd="$*"
+# Need to make sure wildcards are not expanded here.
+cmd=""
+for x in "$@"
+do
+    if echo "$x" | grep '*' > /dev/null; then
+        cmd="$cmd \"$x\""
+    else
+        cmd="$cmd $x"
+    fi
+done
 
 docker run -it --rm \
     --runtime=nvidia \

@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_string('train_files', None, 'File pattern of tfrecord files 
 tf.app.flags.DEFINE_string('eval_files', None, 'File pattern of tfrecord files for evaluation (string).')
 tf.app.flags.DEFINE_integer('batch_size', 8, 'The batch size.')
 tf.app.flags.DEFINE_integer('eval_batch_size', 128, 'The batch size for evaluation.')
-tf.app.flags.DEFINE_integer('num_epochs', 100, 'Number of epochs.')
+tf.app.flags.DEFINE_integer('num_epochs', 10, 'Number of epochs.')
 
 tf.app.flags.DEFINE_string('noise', 'additive_gaussian', 'The noise type to add.')
 
@@ -63,7 +63,8 @@ def main(argv):
         start_delay_secs=120,
         throttle_secs=600)
 
-    tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
+    for epoch in range(FLAGS.num_epochs):
+        tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
 
 if __name__ == '__main__':

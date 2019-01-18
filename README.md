@@ -39,6 +39,8 @@ $ python -m n2n.train <required-args> --noise additive_gaussian --loss l2
 ```
 ![additive-gaussian-noise](results/additive-gaussian-2.png)
 
+![additive-gaussian-noise](results/additive-gaussian-gt-loss.png) ![additive-gaussian-noise](results/additive-gaussian-loss.png)
+
 ### Text overlay noise
 ```bash
 $ python -m n2n.train <required-args> --noise text --loss l1

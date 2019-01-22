@@ -47,6 +47,8 @@ $ python -m n2n.train <required-args> --noise text --loss l1
 ```
 ![text-noise](results/text.png)
 
+![text-noise](results/text-gt-loss.png) ![text-noise](results/text-loss.png)
+
 ### Impulse noise
 ```bash
 $ python -m n2n.train <required-args> --noise impulse --loss l0

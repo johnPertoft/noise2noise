@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import tensorflow as tf
 
-from .dataset import imagenet
+from .dataset import noisy_imagenet
 from .noise import additive_gaussian_noise
 from .noise import bernoulli_noise
 from .noise import brown_additive_gaussian_noise
@@ -30,7 +30,7 @@ def main(argv):
     else:
         raise ValueError(f'Invalid noise: {FLAGS.noise}.')
 
-    ds = imagenet(FLAGS.files, 15, noise_fn=noise_fn)
+    ds = noisy_imagenet(FLAGS.files, 15, noise_fn=noise_fn)
 
     with tf.Session() as sess:
         img1, img2, ground_truth = ds.make_one_shot_iterator().get_next()

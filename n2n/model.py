@@ -1,11 +1,14 @@
 import tensorflow as tf
 
+from .nets import discriminator
 from .nets import rednet
 from .nets import unet
 
 
 tf.app.flags.DEFINE_string('architecture', 'unet', 'The network architecture to use.')
 tf.app.flags.DEFINE_string('loss', 'l2', 'The loss function to use.')
+tf.app.flags.DEFINE_string('adv_loss', None, 'The adversarial loss to use.')
+tf.app.flags.DEFINE_float('adv_loss_weight', 1.0, 'The weight of the adversarial loss in the total loss.')
 tf.app.flags.DEFINE_float('learning_rate', 1e-4, 'The learning rate.')
 tf.app.flags.DEFINE_boolean('variable_histograms', False, 'Whether to add histogram summaries for model variables.')
 tf.app.flags.DEFINE_boolean('gradient_histograms', False, 'Whether to add histogram summaries for model gradients.')
@@ -61,7 +64,9 @@ def model_fn(features, labels, mode, config):
 
     loss = loss_fn(x_hat, features['target'])
 
-    mean_ground_truth_loss = tf.metrics.mean(loss_fn(x_hat, features['gt']))
+    if FLAGS.adv_loss is not None:
+        d_loss, adv_loss = add_adversarial_loss(x_hat, is_training)
+        loss = loss + FLAGS.adv_loss_weight * adv_loss
 
     if mode == tf.estimator.ModeKeys.EVAL:
         tf.summary.image('denoising', tf.concat((features['input'], x_hat, features['gt']), axis=2))
@@ -84,7 +89,7 @@ def model_fn(features, labels, mode, config):
         return tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
-            eval_metric_ops={'ground_truth_loss': mean_ground_truth_loss},
+            eval_metric_ops={'ground_truth_loss': tf.metrics.mean(loss_fn(x_hat, features['gt']))},
             evaluation_hooks=[eval_summary_hook])
 
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -96,7 +101,7 @@ def model_fn(features, labels, mode, config):
             beta1=0.9,
             beta2=0.999)
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-            grads_and_vars = optimizer.compute_gradients(loss)
+            grads_and_vars = optimizer.compute_gradients(loss, var_list=tf.trainable_variables('denoise'))
             train_op = optimizer.apply_gradients(grads_and_vars, global_step)
 
         for g, v in grads_and_vars:
@@ -105,7 +110,39 @@ def model_fn(features, labels, mode, config):
             if FLAGS.gradient_histograms:
                 tf.summary.histogram(g.op.name, g)
 
+        if FLAGS.adv_loss is not None:
+            d_optimizer = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5)
+            d_train_op = d_optimizer.minimize(d_loss, var_list=tf.trainable_variables('discriminate'))
+            train_op = tf.group(train_op, d_train_op)
+
         return tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
             train_op=train_op)
+
+
+def add_adversarial_loss(x_fake, is_training):
+    # TODO: Refactor this.
+    from .data import imagenet
+    clean_ds = imagenet(FLAGS.train_files, FLAGS.batch_size).repeat(None)
+    x_real = clean_ds.make_one_shot_iterator().get_next()
+
+    discriminate = tf.make_template('discriminate', discriminator.model_fn, is_training=is_training)
+
+    d_real = discriminate(x_real)
+    d_fake = discriminate(x_fake)
+
+    if FLAGS.adv_loss == 'lsgan':
+        d_loss = tf.losses.mean_squared_error(tf.ones_like(d_real), d_real) + \
+                 tf.losses.mean_squared_error(tf.zeros_like(d_fake), d_fake)
+        d_loss = d_loss / 2.0
+
+        g_loss = tf.losses.mean_squared_error(tf.ones_like(d_fake), d_fake)
+        g_loss = g_loss / 2.0
+    else:
+        raise ValueError(f'Invalid adversarial loss `{FLAGS.adv_loss}`')
+
+    tf.summary.scalar('adv_d_loss', d_loss)
+    tf.summary.scalar('adv_g_loss', g_loss)
+
+    return d_loss, g_loss

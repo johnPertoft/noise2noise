@@ -15,10 +15,10 @@ else
     tmux new-session -d -s ${SESSION_NAME}
 
     tmux split-window -h
-    tmux_cmd "htop"
+    tmux_cmd "watch nvidia-smi"
 
     tmux split-window -v
-    tmux_cmd "watch nvidia-smi"
+    tmux_cmd "htop"
 
     tmux split-window -v
 

@@ -132,6 +132,9 @@ def add_adversarial_loss(x_fake, is_training):
     d_real = discriminate(x_real)
     d_fake = discriminate(x_fake)
 
+    tf.summary.scalar('d_real', tf.reduce_mean(d_real))
+    tf.summary.scalar('d_fake', tf.reduce_mean(d_fake))
+
     if FLAGS.adv_loss == 'lsgan':
         d_loss = tf.losses.mean_squared_error(tf.ones_like(d_real), d_real) + \
                  tf.losses.mean_squared_error(tf.zeros_like(d_fake), d_fake)

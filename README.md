@@ -41,6 +41,14 @@ $ python -m n2n.train <required-args> --noise additive_gaussian --loss l2
 
 ![additive-gaussian-noise](results/additive-gaussian-gt-loss.png) ![additive-gaussian-noise](results/additive-gaussian-loss.png)
 
+
+#### Experiment with additional adversarial loss
+TODO: Compare on similar images.
+```bash
+$ python -m n2n.train <required-args> --noise additive_gaussian --loss l2 --adv_loss lsgan
+```
+![additive-gaussian-noise-adv](results/additive-gaussian-adv-loss.png)
+
 ### Text overlay noise
 ```bash
 $ python -m n2n.train <required-args> --noise text --loss l1

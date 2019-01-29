@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from .data import imagenet
+from .data import noisy_imagenet
 from .data.noise import additive_gaussian_noise
 from .data.noise import bernoulli_noise
 from .data.noise import impulse_noise
@@ -46,12 +46,12 @@ def main(argv):
         model_dir=FLAGS.model_dir)
 
     def input_fn_train():
-        ds = imagenet(FLAGS.train_files, FLAGS.batch_size, train_noise)
+        ds = noisy_imagenet(FLAGS.train_files, FLAGS.batch_size, train_noise)
         ds = ds.map(lambda img1, img2, gt: {'input': img1, 'target': img2, 'gt': gt})
         return ds
 
     def input_fn_eval():
-        ds = imagenet(FLAGS.eval_files, FLAGS.eval_batch_size, eval_noise)
+        ds = noisy_imagenet(FLAGS.eval_files, FLAGS.eval_batch_size, eval_noise)
         ds = ds.map(lambda img1, img2, gt: {'input': img1, 'target': img2, 'gt': gt})
         return ds
 

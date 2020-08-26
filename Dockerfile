@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM tensorflow/tensorflow:1.15.2-gpu-py3
 
 RUN apt-get update && apt-get install -y \
     software-properties-common \
@@ -8,18 +8,7 @@ RUN apt-get update && apt-get install -y \
     libfontconfig1 \
     libxrender1
 
-RUN add-apt-repository ppa:jonathonf/python-3.6 -y
-RUN apt-get update && apt-get install -y \
-    python3.6 \
-    python3.6-dev \
-    python3.6-venv
-RUN wget https://bootstrap.pypa.io/get-pip.py && python3.6 get-pip.py
-RUN ln -s /usr/bin/python3.6 /usr/local/bin/python
-
-RUN pip3.6 install \
-    tensorflow-gpu==1.12 \
-    numpy==1.15.4 \
-    opencv-python==3.4.5
+RUN pip install opencv-python==3.4.5.20
 
 RUN useradd -ms /bin/bash n2n
 USER n2n
